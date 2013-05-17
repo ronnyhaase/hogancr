@@ -1,0 +1,9 @@
+{
+	  "name"         : "hoganrc"
+	, "description"  : "Hogan.js CLI"
+	, "version"      : "0.1.0"
+	, "author"       : "Ronny Haase <ronhaase@gmail.com>"
+	, "dependencies" : {
+		"hogan.js" : "latest"
+	}
+}

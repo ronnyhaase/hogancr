@@ -1,0 +1,6 @@
+{
+	globalContexts: []
+	, templates: [
+		{ template: './templates/helloworld.mustache', context: './templates/helloworld.mustache.json', out: './helloworld.html' }
+	]
+}
