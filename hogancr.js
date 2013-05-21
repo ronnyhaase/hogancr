@@ -26,22 +26,22 @@ var
 
 	function onArgInput(value) {
 		if ( fs.existsSync(value) )
-			settings.input = value
+			settings.fn_input = value
 		else {
-			console.log('The input-file doesn\'t exist.')
+			util.error('The input-file doesn\'t exist.')
 			process.exit(1)
 		}
 	}
 
 	function onArgOutput(value) {
-		settings.output = value
+		settings.fn_output = value
 	}
 
 	function onArgContext(value) {
 		if ( fs.existsSync(value) )
-			settings.context = value
+			settings.fn_context = value
 		else {
-			console.log('The context-file doesn\'t exist.')
+			util.error('The context-file doesn\'t exist.')
 			process.exit(1)
 		}
 	}
@@ -54,10 +54,15 @@ var
 // hoganrc
 //
 var settings = {
-		input: null
-		, context: null
-		, output: null
+		fn_input: null
+		, fn_context: null
+		, fn_output: null
 		, help: false
+	}
+	, data = {
+		input: ''
+		, context: ''
+		, output: ''
 	}
 
 function printHelp() {
@@ -85,13 +90,31 @@ for (var i = 0; i != argc; i++) {
 if ( settings.context === null )
 	settings.context = {}
 
-if ( (!settings.input || !settings.output /*|| !settings.context*/) && !settings.help )
-	console.log('You must specify a input-, output- and context-file.\n\nType hogancr -h / --help to see the full argument list')
-else if ( settings.help ) {
+// Missing arguments
+if ( (!settings.fn_input || !settings.fn_output || !settings.fn_context) && !settings.help ) {
+	util.error('You must specify a input- and a output-file.\n\nType hogancr -h / --help to see the full argument list')
+	process.exit(1)
+// User requested help
+} else if ( settings.help ) {
 	printHelp()
 	process.exit(0)
-// Everything is fine
+// Everything is fine so far
 } else {
+	// Read data from files
+	data.input = fs.readFileSync(settings.fn_input).toString()
+	data.context = fs.readFileSync(settings.fn_context).toString()
+
+	// Try to JSON.parse context-file (throws an exception on failure)
+	try {
+		data.context = JSON.parse(data.context)
+	} catch(err) {
+		util.error('Error while parsing context-file "' + settings.fn_context +'", maybe it\'s invalid JSON?')
+		process.exit(1)
+	}
+
+	// Hulk Hogan!
+	util.puts( hogan.compile(data.input).render(data.context) )
+
 	process.exit(0)
 }
 
