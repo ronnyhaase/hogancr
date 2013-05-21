@@ -17,10 +17,10 @@ var
 	, argc = argv.length
 
 	, commandList = [
-		{ s: '-i', l: '--input=', desc: '', callback: onArgInput }
-		, { s: '-c', l: '--context=', desc: '', callback: onArgContext }
-		, { s: '-o', l: '--output=', desc: '', callback: onArgOutput }
-		, { s: '-h', l: '--help', desc: '', callback: onArgHelp }
+		{ s: '-i', l: '--input=', desc: 'The location of the tamplate input file (required)', callback: onArgInput }
+		, { s: '-o', l: '--output=', desc: 'The filename where the output shall be written (required)', callback: onArgOutput }
+		, { s: '-c', l: '--context=', desc: 'The location of a JSON input file defining the context (if not specified the context is an empty object)', callback: onArgContext }
+		, { s: '-h', l: '--help', desc: 'Print hogancr help', callback: onArgHelp }
 	]
 	, cllen = commandList.length
 
@@ -63,12 +63,12 @@ var settings = {
 function printHelp() {
 	util.puts('hogancr - Hogan.js Compile & Render CLI')
 	util.puts('')
-	util.puts('usage: hogancr -i[input] -c[context] -o[output]')
+	util.puts('usage: hogancr -i<input> -o<output> [-c<context>]')
 	util.puts('')
 	util.puts('Options:')
-	util.puts('-i / --input:   The template input file (required)')
-	util.puts('-c / --context: The context input file (required)')
-	util.puts('-o / --output:  The output file where the result will be written (required)')
+
+	for ( var i = 0; i != cllen; i++ )
+		util.puts( util.format('%s / %s : %s', commandList[i].s, commandList[i].l, commandList[i].desc) )
 }
 
 for (var i = 0; i != argc; i++) {
@@ -82,8 +82,11 @@ for (var i = 0; i != argc; i++) {
 	}
 }
 
-if ( (!settings.input || !settings.output || !settings.context) && !settings.help )
-	console.log('You must specify a input-, output- and context-file.')
+if ( settings.context === null )
+	settings.context = {}
+
+if ( (!settings.input || !settings.output /*|| !settings.context*/) && !settings.help )
+	console.log('You must specify a input-, output- and context-file.\n\nType hogancr -h / --help to see the full argument list')
 else if ( settings.help ) {
 	printHelp()
 	process.exit(0)
@@ -91,3 +94,4 @@ else if ( settings.help ) {
 } else {
 	process.exit(0)
 }
+
