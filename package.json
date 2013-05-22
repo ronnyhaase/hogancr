@@ -1,9 +1,26 @@
 {
-	  "name"         : "hoganrc"
-	, "description"  : "Hogan.js CLI"
-	, "version"      : "0.1.0"
+	  "name"         : "savage"
 	, "author"       : "Ronny Haase <ronhaase@gmail.com>"
+	, "license"      : "MIT"
+	, "contributors" : []
+	, "description"  : "Savage - Compile & Render CLI for different Template Engines"
+	, "keywords"     : ["cli", "template", "mustache", "handlebars", "hogan"]
+	, "version"      : "0.1.0"
+
+	, "repository"   : {
+		"type" : "git"
+		"url"  : ""
+	}
 	, "dependencies" : {
 		"hogan.js" : "latest"
 	}
+	, "devDependencies" : {
+	}
+	, "engines" : {
+		"node" : ">=0.1"
+	}
+
+	, "bin"          : { "savage" : "./bin/savage" }
+	, "main"         : "./lib/savage"
+	, "preferGlobal" : true
 }
