@@ -9,9 +9,10 @@
 
 	, "repository"   : {
 		"type" : "git"
-		"url"  : ""
+		"url"  : "https://github.com/ronnyhaase/savage.git"
 	}
 	, "dependencies" : {
+		"nopt"     : "2.1.1"
 		"hogan.js" : "latest"
 	}
 	, "devDependencies" : {
