@@ -1,2 +1,8 @@
+# OSs
+.DS_Store
+
+# IDEs
+.esproj
 .idea/
+
 node_modules/

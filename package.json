@@ -13,7 +13,6 @@
 	}
 	, "dependencies" : {
 		"nopt"     : "2.1.1"
-		, "hogan.js" : "latest"
 	}
 	, "devDependencies" : {
 	}
