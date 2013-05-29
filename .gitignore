@@ -2,7 +2,7 @@
 .DS_Store
 
 # IDEs
-.esproj
+*.esproj
 .idea/
 
 node_modules/
