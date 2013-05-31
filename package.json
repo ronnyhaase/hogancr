@@ -1,11 +1,17 @@
 {
 	  "name"         : "savage"
 	, "author"       : "Ronny Haase <ronhaase@gmail.com>"
-	, "license"      : "MIT"
 	, "contributors" : []
 	, "description"  : "Savage - Compile & Render CLI for different Template Engines"
 	, "keywords"     : ["cli", "template", "mustache", "handlebars", "hogan"]
 	, "version"      : "0.1.0"
+	, "license"      : "Apache-2.0"
+	, "licenses"     : [
+		{
+			"type"  : "Apache-2.0"
+	        , "url" : "http://www.apache.org/licenses/LICENSE-2.0"
+		}
+	]
 
 	, "main"         : "./index.js"
 	, "repository"   : {
