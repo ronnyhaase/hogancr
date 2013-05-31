@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+/*
+ *  Copyright (C) Ronny Haase, 2013
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+// Dependencies
+var
+	// Node modules
+	fs = require('fs')
+	, util = require('util')
+
+	// External modules
+	, hogan = require('hogan.js')
+
+//
+// CLI
+//
+var
+	argv = process.argv.slice(2)
+	, argc = argv.length
+
+	, commandList = [
+		{ s: '-i', l: '--input=', desc: 'The location of the tamplate input file (required)', callback: onArgInput }
+		, { s: '-o', l: '--output=', desc: 'The filename where the output shall be written (required)', callback: onArgOutput }
+		, { s: '-c', l: '--context=', desc: 'The location of a JSON input file defining the context (if not specified the context is an empty object)', callback: onArgContext }
+		, { s: '-h', l: '--help', desc: 'Print hogancr help', callback: onArgHelp }
+	]
+	, cllen = commandList.length
+
+	function onArgInput(value) {
+		if ( fs.existsSync(value) )
+			settings.fn_input = value
+		else {
+			util.error('The input-file doesn\'t exist.')
+			process.exit(1)
+		}
+	}
+
+	function onArgOutput(value) {
+		settings.fn_output = value
+	}
+
+	function onArgContext(value) {
+		if ( fs.existsSync(value) )
+			settings.fn_context = value
+		else {
+			util.error('The context-file doesn\'t exist.')
+			process.exit(1)
+		}
+	}
+
+	function onArgHelp() {
+		settings.help = true
+	}
+
+//
+// hoganrc
+//
+var settings = {
+		fn_input: null
+		, fn_context: null
+		, fn_output: null
+		, help: false
+	}
+	, data = {
+		input: ''
+		, context: ''
+		, output: ''
+	}
+
+function printHelp() {
+	util.puts('hogancr - Hogan.js Compile & Render CLI')
+	util.puts('')
+	util.puts('usage: hogancr -i<input> -o<output> [-c<context>]')
+	util.puts('')
+	util.puts('Options:')
+
+	for ( var i = 0; i != cllen; i++ )
+		util.puts( util.format('%s / %s : %s', commandList[i].s, commandList[i].l, commandList[i].desc) )
+}
+
+for (var i = 0; i != argc; i++) {
+	for (var j = 0; j != cllen; j++) {
+		var
+			regex = new RegExp('^(' + commandList[j].s + '|' + commandList[j].l + ')(.*)$','g')
+			, result = regex.exec(argv[i])
+
+		if (result)
+			commandList[j].callback(result[2])
+	}
+}
+
+if ( settings.context === null )
+	settings.context = {}
+
+// Missing arguments
+if ( (!settings.fn_input || !settings.fn_output || !settings.fn_context) && !settings.help ) {
+	util.error('You must specify a input- and a output-file.\n\nType hogancr -h / --help to see the full argument list')
+	process.exit(1)
+// User requested help
+} else if ( settings.help ) {
+	printHelp()
+	process.exit(0)
+// Everything is fine so far
+} else {
+	// Read data from files
+	data.input = fs.readFileSync(settings.fn_input).toString()
+	data.context = fs.readFileSync(settings.fn_context).toString()
+
+	// Try to JSON.parse context-file (throws an exception on failure)
+	try {
+		data.context = JSON.parse(data.context)
+	} catch(err) {
+		util.error('Error while parsing context-file "' + settings.fn_context +'", maybe it\'s invalid JSON?')
+		process.exit(1)
+	}
+
+	// Hulk Hogan!
+	util.puts( hogan.compile(data.input).render(data.context) )
+
+	process.exit(0)
+}
+
