@@ -29,20 +29,83 @@ var
 var
 	options = [
 		// Info
-		{ s: 'h?', l: '--help', desc: 'Print help and exit' }
-		, { s: 'v', l:'--version', desc: 'Print version and exit' }
-		, { s: 'L', l: '--engine-list', desc: 'Print all supported engines' }
+		{ name: 'help', short: 'h?', long: '--help', type: Boolean, desc: 'Print help and exit' }
+		, { name: 'version', short: 'v', long:'--version', type: Boolean, desc: 'Print version and exit' }
+		, { name: 'listEngines', short: 'L', long: '--engine-list', type: Boolean, desc: 'Print all supported engines' }
 
 		// Settings
-		, { s: 'c', l: '--compile', desc: 'Only compile the input file(s)' }
-		, { s: 'r', l: '--render', desc: 'Only render the input file(s)' }
+		, { name: 'compile', short: 'C', long: '--compile', type: Boolean, default: false, desc: 'Only compile the input file(s)' }
+		, { name: 'render', short: 'R', long: '--render', type: Boolean, default: false, desc: 'Only render the input file(s)' }
+		, { name: 'engine', short: 'e', long: '--engine', type: String, default: 'hogan', desc: 'Templating engine' }
 
-		/*, 'version': true
-		, 'listEngines': true
-		, 'compile': true
-		, 'render': true
-		, 'engine': String*/
+		// Input
+		, { name: 'input', short: 'i', long: '--input', type: [String, Array], desc: 'Input template file(s) (If -r is set, compiled template file(s)' }
+		, { name: 'context', short: 'c', long: '--context', type: [String, Array], desc: 'File(s) containing context data for rendering' }
 	]
+	, popts = soptp(options)
+
+function soptp(settings, argv, slicepos) {
+	var parsed = { illegal_: [], files_: [] }
+
+	if ( typeof slicepos !== 'number' || slicepos < 0)
+		slicepos = 2
+	if ( !argv )
+		argv = process.argv.slice(slicepos)
+
+	var argc = argv.length
+	function isArgShort(a) {
+		return (typeof a === 'string' && a[0] === '-' && a[1] !== '-' && a[1] !== undefined)
+	}
+
+	function isArgLong(a) {
+		return (typeof a === 'string' && a[0] === '-' && a[1] === '-' && a[2] !== undefined)
+	}
+
+	// Expects 'a' to be a valid short command argument / list, e.g. "-a" or "-aBcD" !
+	function matchShort(a) {
+		// Iterate through argument string
+		for ( var i = 1, alen = a.length; a[i] !== undefined; i++)
+			// Iterate through all command shorties and look for a match
+			for (var j = 0, slen = settings.length; j < slen; j++)
+				if ( settings[i].short.indexOf( a[i]) !== -1 )
+					;
+	}
+
+	// Expects 'a' to be a valid long command argument, e.g. --foo !
+	function matchLong(a) {
+	}
+
+	function parseArg(a) {
+		if ( isArgShort(a) )
+			matchShort(a)
+		else if ( isArgLong(a) )
+			matchLong(a)
+		else
+			parsed.files_.push(a)
+	}
+
+	(function noConflict(opts) {
+		var shortList = ''
+			, longList = []
+
+		for (var i = 0, len = opts.length; i < len; i++) {
+			if ( shortList.indexOf(opts[i].short) === -1 )
+				shortList += opts[i].short
+			else
+				throw new Error('(soptp) The shortage ´' + opts[i].short  + '´ is assigned more than once!')
+
+			if ( longList.indexOf(opts[i].long) === -1 )
+				longList.push(opts[i].long)
+			else
+				throw new Error('(soptp) The long command ´' + opts[i].long  + '´ is assigned more than once!')
+		}
+	})(settings)
+
+	for (var i = 0; i < argc; i++) 
+		parseArg(argv[i])
+
+	return parsed
+}
 
 function printHelp() {
 	util.puts(
@@ -51,14 +114,16 @@ function printHelp() {
 		'\n' +
 		'Usage: savage [options] -i<Input file>\n' +
 		'\n' +
-		'Options:\n' +
+		'Optionshort:\n' +
 		'   none\n' +
 		'\n' +
 		'Further help can be found at http://github.com/ronnyhaase/savage'
 	)
 }
 
-function printVersion() {
+console.log(popts)
+
+/*function printVersion() {
 	util.puts('v' + require('../package.json').version)
 }
 
@@ -72,5 +137,4 @@ if ( options.help )
 if ( options.version )
 	printVersion()
 
-console.log( options )
-	//printEngineList()
+console.log( options )*/
