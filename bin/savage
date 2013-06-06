@@ -22,6 +22,7 @@ var
 
 	// Own modules
 	, savage = require('../lib/savage')
+	, sopp = require('../lib/sopp')
 
 // -----------
 // Savage CLI
@@ -44,102 +45,6 @@ var
 	]
 	, popts = sopp(options)
 
-function sopp(settings, argv, slicepos) {
-	var parsed = { illegal_: [], files_: [] }
-
-	if ( typeof slicepos !== 'number' || slicepos < 0)
-		slicepos = 2
-	if ( !Array.isArray(argv) )
-		argv = process.argv.slice(slicepos)
-
-	var argc = argv.length
-
-	function isArgShort(a) {
-		// -> /^-{1}.+$/
-		return (typeof a === 'string' && a[0] === '-' && a[1] !== '-' && a[1] !== undefined)
-	}
-
-	function isArgLong(a) {
-		// -> /^-{2}.+$/
-		return (typeof a === 'string' && a[0] === '-' && a[1] === '-' && a[2] !== undefined)
-	}
-
-	// Expects 'arg' to be a valid short command argument / list, e.g. "-a" or "-aBcD" !
-	function matchShort(arg) {
-		var match = false
-			, idx = 0
-
-		// Iterate through argument string
-		for ( var i = 1, alen = arg.length; arg[i] !== undefined; i++) {
-			match = false
-			// Iterate through all command shorties and look for a match against current argument-string character
-			for (var j = 0, slen = settings.length; j < slen; j++) {
-				if ( (idx = settings[j].short.indexOf(arg[i])) !== -1 ) {
-					match = true
-
-					if ( settings[j].type === Boolean ) {
-						parsed[settings[j].name] = true
-					} else if ( settings[j].type === Array ) {
-						if ( parsed[settings[j].name] === undefined )
-							parsed[settings[j].name] = []
-
-						parsed[settings[j].name].push(   )
-
-						return
-					} else if (settings[j].type === String) {
-						parsed[settings[j].name] = ?
-
-						return
-					}
-				}
-			}
-
-			// No match, push to illegal_
-			if (!match)
-				parsed.illegal_.push( arg[i] )
-		}
-	}
-
-	// Expects 'arg' to be a valid long command argument, e.g. --foo !
-	function matchLong(arg) {
-	}
-
-	(function noConflict(opts) {
-		var shortList = ''
-			, longList = []
-			, supportedTypes = [String, Boolean, Array]
-
-		for (var i = 0, len = opts.length; i < len; i++) {
-			// Look for duplicate short command
-			if ( shortList.indexOf(opts[i].short) === -1 )
-				shortList += opts[i].short
-			else
-				throw new Error('(sopp) The shortage ´' + opts[i].short  + '´ is assigned more than once!')
-
-			// Look for duplicate long command
-			if ( longList.indexOf(opts[i].long) === -1 )
-				longList.push(opts[i].long)
-			else
-				throw new Error('(sopp) The long command ´' + opts[i].long  + '´ is assigned more than once!')
-
-			// Check for type support
-			if ( supportedTypes.indexOf(opts[i].type) === -1)
-				throw new Error('(sopp) SOPP doesn\'t support the type "' + opts[i].type + '"!')
-		}
-	})(settings)
-
-	for (var i = 0; i < argc; i++) {
-		if ( isArgShort(argv[i]) )
-			matchShort(argv[i])
-		else if ( isArgLong(argv[i]) )
-			matchLong(argv[i])
-		else
-			parsed.files_.push(argv[i])
-	}
-
-	return parsed
-}
-
 function printHelp() {
 	util.puts(
 		'savage - Savage CLI + (Pre-)Compile & Render with your favorite template engine.\n' +
@@ -155,6 +60,7 @@ function printHelp() {
 }
 
 console.log(popts)
+//console.log(process.argv)
 
 /*function printVersion() {
 	util.puts('v' + require('../package.json').version)
