@@ -35,9 +35,9 @@ var
 		, { name: 'listEngines', short: 'L', long: '--engine-list', type: Boolean, desc: 'Print all supported engines' }
 
 		// Settings
-		, { name: 'compile', short: 'C', long: '--compile', type: Boolean, default: false, desc: 'Only compile the input file(s)' }
-		, { name: 'render', short: 'R', long: '--render', type: Boolean, default: false, desc: 'Only render the input file(s)' }
-		, { name: 'engine', short: 'e', long: '--engine', type: String, default: 'hogan', desc: 'Templating engine' }
+		, { name: 'compile', short: 'C', long: '--compile', type: Boolean, defaultval: false, desc: 'Only compile the input file(s)' }
+		, { name: 'render', short: 'R', long: '--render', type: Boolean, defaultval: false, desc: 'Only render the input file(s)' }
+		, { name: 'engine', short: 'e', long: '--engine', type: String, defaultval: 'hogan', desc: 'Templating engine' }
 
 		// Input
 		, { name: 'input', short: 'i', long: '--input', type: Array, desc: 'Input template file(s) (If -r is set, compiled template file(s)' }
